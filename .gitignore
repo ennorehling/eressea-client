@@ -1,0 +1,36 @@
+imgui.ini
+.vs
+*.dll
+*.orig
+Debug
+Release
+
+# SlickEdit
+*.vtg
+*.vpwhistu
+
+# Microsoft Visual Studio build artefacts
+src/*.vcproj.*.user
+ipch/
+*.ipch
+*.ncb
+*.opensdf
+*.pdb
+*.sdf
+*.suo
+*.user
+
+*~
+*.pyc
+*.bak
+*.swp
+bin/
+build*/
+*.log
+*.log.*
+tags
+Thumbs.db
+.gdb_history
+*.cfg
+*.cmd
+*.mo
