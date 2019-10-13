@@ -1,0 +1,9 @@
+[submodule "imgui_sdl"]
+	path = imgui_sdl
+	url = git@github.com:Tyyppi77/imgui_sdl.git
+[submodule "imgui"]
+	path = imgui
+	url = git@github.com:ocornut/imgui.git
+[submodule "crpat"]
+	path = crpat
+	url = git@github.com:ennorehling/crpat.git
