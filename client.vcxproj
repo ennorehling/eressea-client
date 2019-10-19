@@ -79,7 +79,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Enno\Documents\Eressea\client\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Enno\Documents\Eressea\client\imgui;C:\Users\Enno\Documents\Eressea\client\cJSON;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>SDL2_image.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -123,14 +124,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cJSON\cJSON.c" />
+    <ClCompile Include="crdata.c" />
+    <ClCompile Include="crjson.c" />
+    <ClCompile Include="crfile.c" />
+    <ClCompile Include="crpat\crpat.c" />
     <ClCompile Include="imgui\examples\imgui_impl_sdl.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui_sdl\imgui_sdl.cpp" />
+    <ClCompile Include="log.c" />
     <ClCompile Include="mapper.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="crdata.h" />
+    <ClInclude Include="crjson.h" />
+    <ClInclude Include="crfile.h" />
+    <ClInclude Include="gettext.h" />
     <ClInclude Include="imgui\examples\imgui_impl_sdl.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui_sdl\imgui_sdl.h" />

@@ -119,8 +119,8 @@ int main(int argc, char** argv) {
                 case SDL_SCANCODE_DOWN:
                     delta.y = 1;
                     break;
-		default:
-		    break;
+		        default:
+		            break;
                 }
             }
         }
@@ -132,8 +132,21 @@ int main(int argc, char** argv) {
         ImGui_ImplSDL2_NewFrame(window);
         ImGui::NewFrame();
 
-        ImGui::Begin("Image");
-        ImGui::Image(textures[0], ImVec2(100, 100));
+        ImGui::Begin("Xontormia (4,7)");
+        ImGui::Text("Ebene");
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+        ImGui::Columns(2);
+        ImGui::Separator();
+        ImGui::Text("Baeume:");
+        ImGui::NextColumn();
+        ImGui::Text("12");
+        ImGui::NextColumn();
+        ImGui::Text("Bauern:");
+        ImGui::NextColumn();
+        ImGui::Text("3890");
+        ImGui::Columns(1);
+        ImGui::Separator();
+        ImGui::PopStyleVar();
         ImGui::End();
 
         // Clear the window content (using the default renderer color)
