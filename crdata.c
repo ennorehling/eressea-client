@@ -1,10 +1,9 @@
-#pragma once
-
 #include "crdata.h"
 #include "crjson.h"
 
-#include <cJSON.h>
+#include <cjson/cJSON.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 struct crdata {
     cJSON *json;
