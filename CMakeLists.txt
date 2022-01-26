@@ -11,11 +11,16 @@ file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH )
 endif(WIN32)
 
 find_package(CJSON 1.7 REQUIRED)
-find_package(RAYLIB 3.0 REQUIRED)
+find_package(raylib 3.0 REQUIRED)
+
+if(raylib_FOUND)
+  set(RAYLIB_LIBRARIES "${raylib_LIBRARIES}")
+  set(RAYLIB_INCLUDE_DIRS "${raylib_INCLUDE_DIRS}")
+endif(raylib_FOUND)
 
 add_subdirectory(crpat)
 
-add_executable(mapper mapper.c log.c crfile.c crdata.c crjson.c)
+add_executable(mapper mapper.c crjson.c crfile.c log.c)
 target_link_libraries(mapper PRIVATE
     ${CRPAT_LIBRARIES}
     ${RAYLIB_LIBRARIES}
