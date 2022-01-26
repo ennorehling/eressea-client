@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
             Vector2 dest;
             int ty = dy + y;
             dest.y = ty * 48 - viewport.y - 40;
-            for (x = 0; x != dw; ++x) {
+            for (x = 0; x <= dw; ++x) {
                 int tx = dx + x;
                 dest.x = tx * 64 - viewport.x - 40 + (ty & 1) * 32;
                 // Copy the texture on the renderer
@@ -83,8 +83,6 @@ int main(int argc, char** argv) {
         }
         EndDrawing();
     }
-    // Wait for 10 seconds
-    // SDL_Delay(10000);
 
     // Clear the allocated resources
     destroy_textures();
