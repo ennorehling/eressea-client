@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "crfile.h"
 #include "gettext.h"
 #include "log.h"
@@ -203,7 +204,7 @@ static void handle_object(parser_t *p, const char *name, unsigned int keyc, int 
     }
 }
 
-static void handle_element(void *udata, const char *name, unsigned int keyc, int keyv[]) {
+static enum CR_Error handle_element(void *udata, const char *name, unsigned int keyc, int keyv[]) {
     parser_t *p = (parser_t *)udata;
     if (keyc == 0) {
         handle_block(p, name);
@@ -211,30 +212,37 @@ static void handle_element(void *udata, const char *name, unsigned int keyc, int
     else {
         handle_object(p, name, keyc, keyv);
     }
+    return CR_ERROR_NONE;
 }
 
-static void handle_string(void *udata, const char *name, const char *value) {
+static enum CR_Error handle_string(void *udata, const char *name, const char *value) {
     parser_t *p = (parser_t *)udata;
 
     if (p->block && p->block->type == cJSON_Object) {
         cJSON_AddStringToObject(p->block, name, value);
+        return CR_ERROR_NONE;
     }
+    return CR_ERROR_GRAMMAR;
 }
 
-static void handle_number(void *udata, const char *name, long value) {
+static enum CR_Error handle_number(void *udata, const char *name, long value) {
     parser_t *p = (parser_t *)udata;
 
     if (p->block && p->block->type == cJSON_Object) {
         cJSON_AddNumberToObject(p->block, name, (double)value);
+        return CR_ERROR_NONE;
     }
+    return CR_ERROR_GRAMMAR;
 }
 
-static void handle_text(void *udata, const char *text) {
+static enum CR_Error handle_text(void *udata, const char *text) {
     parser_t *p = (parser_t *)udata;
 
     if (p->block && p->block->type == cJSON_Array) {
         cJSON_AddItemToArray(p->block, cJSON_CreateString(text));
+        return CR_ERROR_NONE;
     }
+    return CR_ERROR_GRAMMAR;
 }
 
 cJSON *crfile_read(FILE *in, const char *filename) {
