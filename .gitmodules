@@ -1,3 +1,6 @@
 [submodule "crpat"]
 	path = crpat
 	url = https://github.com/ennorehling/crpat.git
+[submodule "stb"]
+	path = stb
+	url = https://github.com/nothings/stb.git

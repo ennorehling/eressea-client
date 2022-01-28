@@ -1,5 +1,10 @@
 #include <raylib.h>
 
+#define STB_LIB_IMPLEMENTATION
+#include "stb/tests/prerelease/stb_lib.h"
+#define STB_DS_IMPLEMENTATION
+#include "stb/stb_ds.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,21 +12,27 @@
 // Load an image from "fname" and return an SDL_Texture with the content of the image
 Texture2D load_texture(const char* fname);
 
-#define MAXTERRAINS 4
-static Texture2D textures[MAXTERRAINS];
+static Texture2D *textures;
 
 void load_textures(void) {
-    textures[0] = load_texture("res/img/ozean.png");
-    textures[1] = load_texture("res/img/ebene.png");
-    textures[2] = load_texture("res/img/berge.png");
-    textures[3] = load_texture("res/img/wueste.png");
+    char **files, **p;
+    files = stb_readdir_files_mask("res/img", "*.png");
+    stb_arr_for(p, files) {
+        char *filename = *p;
+        Texture2D tex = load_texture(filename);
+        if (tex.format) {
+            stb_arr_push(textures, tex);
+        }
+    }
+    stb_readdir_free(files);
 }
 
 void destroy_textures(void) {
     int i;
-    for (i = 0; i != MAXTERRAINS; ++i) {
+    for (i = 0; i != stb_arr_len(textures); ++i) {
         UnloadTexture(textures[i]);
     }
+    stb_arr_free(textures);
 }
 
 static int map_terrain(int x, int y) {
