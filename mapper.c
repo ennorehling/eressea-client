@@ -1,8 +1,6 @@
 #include <raylib.h>
 
-#define STB_LIB_IMPLEMENTATION
 #include "stb/tests/prerelease/stb_lib.h"
-#define STB_DS_IMPLEMENTATION
 #include "stb/stb_ds.h"
 
 #include <stdbool.h>
@@ -41,11 +39,19 @@ static int map_terrain(int x, int y) {
     return ((tx < ty) ? tx : ty) % stb_arr_len(textures);
 }
 
+
+typedef struct Point {
+    int x, y;
+} Point;
+typedef struct Rect {
+    int x, y, width, height;
+} Rect;
+
 int main(int argc, char** argv) {
     // Create and initialize a 800x600 window
     InitWindow(800, 600, "raylib mapper");
     load_textures();
-    Rectangle viewport = { 0, 0, 0, 0 };
+    Rect viewport = { 0, 0, 0, 0 };
     int dw, dh;
     viewport.width = GetScreenWidth();
     viewport.height = GetScreenHeight();
@@ -54,7 +60,7 @@ int main(int argc, char** argv) {
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
         int speed = 1;
-        Vector2 delta = { 0, 0 };
+        Point delta = { 0, 0 };
         if (IsKeyDown(KEY_LEFT_SHIFT)) {
             speed = 10;
         }
@@ -73,7 +79,7 @@ int main(int argc, char** argv) {
         viewport.x += delta.x * speed;
         viewport.y += delta.y * speed;
 
-        float dx, dy;
+        int dx, dy;
         dx = viewport.x / 64 - ((viewport.x < 0) ? 1 : 0);
         dy = viewport.y / 48 - ((viewport.y < 0) ? 1 : 0);
 
@@ -83,10 +89,10 @@ int main(int argc, char** argv) {
         for (y = 0; y <= dh; ++y) {
             Vector2 dest;
             int ty = dy + y;
-            dest.y = ty * 48 - viewport.y - 40;
+            dest.y = (float)(ty * 48 - viewport.y - 40);
             for (x = 0; x <= dw; ++x) {
                 int tx = dx + x;
-                dest.x = tx * 64 - viewport.x - 40 + (ty & 1) * 32;
+                dest.x = (float)(tx * 64 - viewport.x - 40 + (ty & 1) * 32);
                 // Copy the texture on the renderer
                 int terrain = map_terrain(tx, ty);
                 DrawTextureV(textures[terrain], dest, WHITE);

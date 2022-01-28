@@ -20,7 +20,7 @@ endif(raylib_FOUND)
 
 add_subdirectory(crpat)
 
-add_executable(mapper mapper.c crjson.c crfile.c log.c)
+add_executable(mapper mapper.c libs.c crjson.c crfile.c log.c)
 target_link_libraries(mapper PRIVATE
     ${CRPAT_LIBRARIES}
     ${RAYLIB_LIBRARIES}
