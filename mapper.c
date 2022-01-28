@@ -38,7 +38,7 @@ void destroy_textures(void) {
 static int map_terrain(int x, int y) {
     int tx = abs(x);
     int ty = abs(y);
-    return ((tx < ty) ? tx : ty) % 4;
+    return ((tx < ty) ? tx : ty) % stb_arr_len(textures);
 }
 
 int main(int argc, char** argv) {
