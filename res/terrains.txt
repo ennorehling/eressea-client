@@ -1,0 +1,9 @@
+Berge	berge.png
+Ebene	ebene.png
+Gletscher	gletscher.png
+Hochland	hochland.png
+Oyean	ozean.png
+Sumpf	sumpf.png
+Wald	wald.png
+Wüste	wueste.png
+
