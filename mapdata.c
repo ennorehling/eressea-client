@@ -1,9 +1,9 @@
 #include "mapdata.h"
 #include "stb/stb_ds.h"
 
-size_t map_row_index(struct map_info** rows, int y)
+unsigned int map_row_index(struct map_info** rows, int y)
 {
-    size_t i, len = arrlen(rows);
+    unsigned int i, len = arrlen(rows);
     // TODO: binary search
     for (i = 0; i != len; ++i) {
         if (rows[i]->y >= y) {
@@ -13,9 +13,9 @@ size_t map_row_index(struct map_info** rows, int y)
     return len;
 }
 
-size_t map_col_index(struct map_info* row, int x)
+unsigned int map_col_index(struct map_info* row, int x)
 {
-    size_t i, len = arrlen(row);
+    unsigned int i, len = arrlen(row);
     // TODO: binary search
     for (i = 0; i != len; ++i) {
         if (row[i].x >= x) {
