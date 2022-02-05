@@ -40,6 +40,7 @@ static const struct {
     { "TALENTE", 3, TYPE_OBJECT },
     { "SPRUECHE", 3, TYPE_ARRAY },
     { "COMMANDS", 3, TYPE_ARRAY },
+    { "EFFECTS", 3, TYPE_ARRAY },
     { NULL, 0,  TYPE_OBJECT },
 };
 
@@ -72,11 +73,7 @@ static cJSON *block_create(parser_t * p, const char *name) {
             } else {
                 block = cJSON_CreateObject();
             }
-            if (depth > p->sp + 1) {
-                log_error(NULL, gettext("invalid object hierarchy at %s\n"), block_name(name, 0, NULL));
-                parent = NULL;
-            }
-            else {
+            if (depth < p->sp + 1) {
                 // Adjust the stack so our parent is on top:
                 p->sp = depth - 1;
                 parent = p->stack[p->sp];
@@ -145,7 +142,7 @@ static void handle_object(parser_t *p, const char *name, unsigned int keyc, int 
         if (strcmp("VERSION", name) == 0) {
             cJSON *block;
             int version = (keyc > 0) ? keyv[0] : 0;
-            if (version != 66) {
+            if (version < 66) {
                 fprintf(stderr, gettext("unknown version %d\n"), version);
             }
             block = cJSON_CreateObject();
@@ -247,12 +244,9 @@ static enum CR_Error handle_text(void *udata, const char *text) {
     return CR_ERROR_GRAMMAR;
 }
 
-cJSON *crfile_read(FILE *in, const char *filename) {
+CR_Parser crfile_create_parser(parser_t* state)
+{
     CR_Parser cp;
-    int done = 0;
-    char buf[2048], *input;
-    parser_t state;
-    size_t len;
 
     cp = CR_ParserCreate();
     CR_SetElementHandler(cp, handle_element);
@@ -261,10 +255,39 @@ cJSON *crfile_read(FILE *in, const char *filename) {
     CR_SetTextHandler(cp, handle_text);
 
     memset(&state, 0, sizeof(state));
-    state.parser = cp;
-    state.root = NULL;
-    CR_SetUserData(cp, (void *)&state);
+    state->parser = cp;
+    state->root = NULL;
+    CR_SetUserData(cp, (void*)state);
 
+    return cp;
+}
+
+cJSON* crfile_parse(const char* input)
+{
+    CR_Parser cp;
+    size_t len = strlen(input);
+    parser_t state = { 0 };
+
+    cp = crfile_create_parser(&state);
+    if (CR_Parse(cp, input, len, true) == CR_STATUS_ERROR) {
+        log_error(NULL, gettext("parse error at line %d of input: %s\n"),
+            CR_GetCurrentLineNumber(cp),
+            CR_ErrorString(CR_GetErrorCode(cp)));
+        cJSON_Delete(state.root);
+        state.root = NULL;
+    }
+    CR_ParserFree(cp);
+    return state.root;
+}
+
+cJSON *crfile_read(FILE *in, const char *filename) {
+    CR_Parser cp;
+    int done = 0;
+    char buf[2048], *input;
+    parser_t state = { 0 };
+    size_t len;
+
+    cp = crfile_create_parser(&state);
     input = buf;
     len = fread(buf, 1, sizeof(buf), in);
     if (len >= 3 && buf[0] != 'V') {

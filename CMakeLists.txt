@@ -33,5 +33,15 @@ target_include_directories(mapper PRIVATE
     ${CJSON_INCLUDE_DIRS}
 )
 
-add_executable(tests tests.c libs.c CuTest.c mapdata.c)
+add_executable(tests tests.c libs.c CuTest.c mapdata.c crfile.c log.c)
+target_include_directories(tests PRIVATE
+    ${CRPAT_INCLUDE_DIR}
+    ${CJSON_INCLUDE_DIRS}
+)
+
+target_link_libraries(tests PRIVATE
+    ${CRPAT_LIBRARIES}
+    ${CJSON_LIBRARIES}
+)
+
 add_test(tests tests)

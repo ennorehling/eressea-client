@@ -1,8 +1,13 @@
+#if !defined(_CRT_SECURE_NO_WARNINGS) && defined(_MSC_VER)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "mapdata.h"
+#include "crfile.h"
 
 #include "stb/stb_ds.h"
 #include "CuTest.h"
 
+#include <cJSON/cJSON.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -102,6 +107,45 @@ static void test_map_col_index(CuTest* tc)
     map_free(map.rows);
 }
 
+static void test_crparse(CuTest* tc) {
+    FILE* F;
+    const char* filename = "tests/effects.cr";
+
+    F = fopen(filename, "r");
+    if (F) {
+        struct cJSON* json, *child, *region;
+        json = crfile_read(F, filename);
+        CuAssertPtrNotNull(tc, json);
+        CuAssertIntEquals(tc, cJSON_Object, json->type);
+
+        child = cJSON_GetObjectItem(json, "PARTEI");
+        CuAssertIntEquals(tc, cJSON_Array, child->type);
+        CuAssertIntEquals(tc, 1, cJSON_GetArraySize(child));
+
+        region = cJSON_GetObjectItem(json, "REGION");
+        CuAssertIntEquals(tc, cJSON_Array, region->type);
+        CuAssertIntEquals(tc, 2, cJSON_GetArraySize(region));
+
+        child = cJSON_GetObjectItem(region, "EFFECTS");
+        CuAssertIntEquals(tc, cJSON_Array, child->type);
+        CuAssertIntEquals(tc, 2, cJSON_GetArraySize(child));
+
+        child = cJSON_GetObjectItem(region, "BURG"); // Liste der Burgen
+        CuAssertIntEquals(tc, cJSON_Array, child->type);
+        CuAssertIntEquals(tc, 1, cJSON_GetArraySize(child));
+
+        child = cJSON_GetArrayItem(child, 0); // Eine Burg
+        CuAssertIntEquals(tc, cJSON_Object, child->type);
+
+        child = cJSON_GetObjectItem(child, "EFFECTS"); // Effekte der Burg
+        CuAssertIntEquals(tc, cJSON_Array, child->type);
+        CuAssertIntEquals(tc, 1, cJSON_GetArraySize(child));
+
+        cJSON_Delete(json);
+        fclose(F);
+    }
+}
+
 void add_suite_mapdata(CuSuite* suite)
 {
     SUITE_ADD_TEST(suite, test_map_insert);
@@ -109,6 +153,7 @@ void add_suite_mapdata(CuSuite* suite)
     SUITE_ADD_TEST(suite, test_map_col_index);
     SUITE_ADD_TEST(suite, test_map_get_row);
     SUITE_ADD_TEST(suite, test_map_get);
+    SUITE_ADD_TEST(suite, test_crparse);
 }
 
 int main(void)
