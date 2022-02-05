@@ -8,18 +8,6 @@ PARTEI 1
 "Elfen";Typ
 130;Rekrutierungskosten
 "Les Maîtres Du Temps";Parteiname
-REGION 6 -8
-"Ozean";Terrain
-1369585097;id
-REGION 7 -8
-"Ozean";Terrain
-394272140;id
-REGION -1 9
-"Ozean";Terrain
-1698706087;id
-REGION 0 9
-"Ozean";Terrain
-1477343138;id
 REGION 0 8
 "Formentaur Pelgaer'ros";Name
 "Ebene";Terrain

@@ -126,6 +126,9 @@ static void test_crparse(CuTest* tc) {
         CuAssertIntEquals(tc, cJSON_Array, region->type);
         CuAssertIntEquals(tc, 2, cJSON_GetArraySize(region));
 
+        region = cJSON_GetArrayItem(region, 0);
+        CuAssertIntEquals(tc, cJSON_Object, region->type);
+        
         child = cJSON_GetObjectItem(region, "EFFECTS");
         CuAssertIntEquals(tc, cJSON_Array, child->type);
         CuAssertIntEquals(tc, 2, cJSON_GetArraySize(child));

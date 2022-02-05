@@ -254,7 +254,7 @@ CR_Parser crfile_create_parser(parser_t* state)
     CR_SetNumberHandler(cp, handle_number);
     CR_SetTextHandler(cp, handle_text);
 
-    memset(&state, 0, sizeof(state));
+    memset(state, 0, sizeof(parser_t));
     state->parser = cp;
     state->root = NULL;
     CR_SetUserData(cp, (void*)state);
