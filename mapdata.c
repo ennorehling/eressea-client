@@ -118,3 +118,12 @@ map_info* map_insert(struct map_info*** map, int x, int y)
     row[i].y = y;
     return row + i;
 }
+
+void map_free(struct map_info** rows)
+{
+    size_t i, len = arrlen(rows);
+    for (i = 0; i != len; ++i) {
+        arrfree(rows[i]);
+    }
+    arrfree(rows);
+}

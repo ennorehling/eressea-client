@@ -25,6 +25,8 @@ static void test_map_insert(CuTest* tc)
     CuAssertIntEquals(tc, 0, map.rows[0][0].x);
     CuAssertIntEquals(tc, 0, map.rows[0][1].y);
     CuAssertIntEquals(tc, 1, map.rows[0][1].x);
+
+    map_free(map.rows);
 }
 
 static void test_map_get_row(CuTest* tc)
@@ -36,6 +38,8 @@ static void test_map_get_row(CuTest* tc)
     CuAssertPtrNotNull(tc, (row = map_get_row(map.rows, 0)));
     CuAssertIntEquals(tc, 0, row->y);
     CuAssertIntEquals(tc, 1, (int)arrlen(row));
+
+    map_free(map.rows);
 }
 
 static void test_map_get(CuTest* tc)
@@ -54,6 +58,8 @@ static void test_map_get(CuTest* tc)
     CuAssertPtrNotNull(tc, (ins = map_get(map.rows, 1, 0)));
     CuAssertIntEquals(tc, 1, ins->x);
     CuAssertIntEquals(tc, 0, ins->y);
+
+    map_free(map.rows);
 }
 
 static void test_map_row_index(CuTest* tc)
@@ -71,6 +77,8 @@ static void test_map_row_index(CuTest* tc)
     CuAssertIntEquals(tc, 0, (int)map_row_index(map.rows, 0));
     CuAssertIntEquals(tc, 1, (int)map_row_index(map.rows, 1));
     CuAssertIntEquals(tc, 2, (int)map_row_index(map.rows, 2));
+
+    map_free(map.rows);
 }
 
 static void test_map_col_index(CuTest* tc)
@@ -90,6 +98,8 @@ static void test_map_col_index(CuTest* tc)
     CuAssertIntEquals(tc, 0, (int)map_col_index(row, 0));
     CuAssertIntEquals(tc, 1, (int)map_col_index(row, 1));
     CuAssertIntEquals(tc, 2, (int)map_col_index(row, 2));
+
+    map_free(map.rows);
 }
 
 void add_suite_mapdata(CuSuite* suite)
