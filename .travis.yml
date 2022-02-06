@@ -7,3 +7,9 @@ script:
   - cmake -B build -S .
   - cd build
   - make && make test
+addons:
+  apt:
+    packages:
+      - libcjson-dev
+os:
+  - linux
