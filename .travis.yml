@@ -1,0 +1,9 @@
+language: c
+compiler:
+  - gcc
+  - clang
+script:
+  - git submodule update --init
+  - cmake -B build -S .
+  - cd build
+  - make && make test
