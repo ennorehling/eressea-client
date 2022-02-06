@@ -24,7 +24,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
+        with:
+          fetch-depth: 1
+      - name: Install dependencies
+        run: sudo apt install libcjson-dev
       - name: Run .travis.yml build script
         uses: ktomk/run-travis-yml@v1
         with:
