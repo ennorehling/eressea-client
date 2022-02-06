@@ -1,6 +1,26 @@
 #include "mapdata.h"
 #include "stb/stb_ds.h"
 
+void *lbound(const void *key, const void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *))
+{
+    size_t l = 0, r = nmemb;
+    while (l != r) {
+        size_t p = (l + r) / 2;
+        int c = compar(key, (char *)base + p * size);
+        if (c == 0) {
+            l = p;
+            break;
+        }
+        else if (c < 0) {
+            r = p;
+        }
+        else {
+            l = p + 1;
+        }
+    }
+    return (char *)base + l * size;
+}
+
 unsigned int map_row_index(struct map_info** rows, int y)
 {
     unsigned int i, len = arrlen(rows);
