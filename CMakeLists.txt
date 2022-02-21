@@ -21,7 +21,7 @@ endif(raylib_FOUND)
 
 add_subdirectory(crpat)
 
-add_executable(mapper mapper.c libs.c crjson.c crfile.c log.c mapdata.c)
+add_executable(mapper mapper.c libs.c crjson.c crfile.c log.c mapdata.c viewport.c)
 target_link_libraries(mapper PRIVATE
     ${CRPAT_LIBRARIES}
     ${RAYLIB_LIBRARIES}
@@ -34,7 +34,7 @@ target_include_directories(mapper PRIVATE
     ${CJSON_INCLUDE_DIRS}
 )
 
-add_executable(tests tests.c libs.c CuTest.c mapdata.c crfile.c log.c)
+add_executable(tests tests.c libs.c CuTest.c mapdata.c crfile.c log.c viewport.c)
 target_include_directories(tests PRIVATE
     ${CRPAT_INCLUDE_DIR}
     ${CJSON_INCLUDE_DIRS}

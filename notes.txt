@@ -1,0 +1,13 @@
+int GetHexFromScreenY(int screen_x, int screen_y)
+{
+    (void)screen_x;
+    return - div_floor(screen_y, TILE_HEIGHT);
+}
+
+int GetHexFromScreenX(int screen_x, int screen_y)
+{
+    screen_x -= TILE_WIDTH / 2;
+    screen_y -= TILE_HEIGHT / 2;
+    return div_floor(screen_x, TILE_WIDTH) + div_floor(screen_y, TILE_HEIGHT);
+}
+

@@ -3,6 +3,7 @@
 #endif
 #include "mapdata.h"
 #include "crfile.h"
+#include "viewport.h"
 
 #include "stb/stb_ds.h"
 #include "CuTest.h"
@@ -149,6 +150,38 @@ static void test_crparse(CuTest* tc) {
     }
 }
 
+static void test_get_screen_from_hex(CuTest* tc) {
+    CuAssertIntEquals(tc, 0, GetScreenFromHexX(0, 0));
+    CuAssertIntEquals(tc, - TILE_WIDTH / 2, GetScreenFromHexX(0, -1));
+    CuAssertIntEquals(tc, TILE_WIDTH / 2, GetScreenFromHexX(0, 1));
+    CuAssertIntEquals(tc, TILE_WIDTH, GetScreenFromHexX(1, 0));
+    CuAssertIntEquals(tc, -TILE_WIDTH, GetScreenFromHexX(-1, 0));
+
+    CuAssertIntEquals(tc, 0, GetScreenFromHexY(0, 0));
+    CuAssertIntEquals(tc, -TILE_HEIGHT, GetScreenFromHexY(0, 1));
+    CuAssertIntEquals(tc, TILE_HEIGHT, GetScreenFromHexY(0, -1));
+}
+
+static void test_get_hex_from_screen(CuTest* tc) {
+    CuAssertIntEquals(tc, 0, GetHexFromScreenX(0, 0));
+    CuAssertIntEquals(tc, 1, GetHexFromScreenX(TILE_WIDTH, 0));
+    CuAssertIntEquals(tc, -1, GetHexFromScreenX(-TILE_WIDTH, 0));
+
+    CuAssertIntEquals(tc, 0, GetHexFromScreenX(TILE_WIDTH / 2 - 1, 0));
+    CuAssertIntEquals(tc, 1, GetHexFromScreenX(TILE_WIDTH / 2, 0));
+
+    CuAssertIntEquals(tc, 0, GetHexFromScreenX(- TILE_WIDTH / 2, 0));
+    CuAssertIntEquals(tc, -1, GetHexFromScreenX(- TILE_WIDTH / 2 - 1, 0));
+
+    CuAssertIntEquals(tc, -1, GetHexFromScreenX(0, TILE_HEIGHT));
+
+    CuAssertIntEquals(tc, 0, GetHexFromScreenY(0, 0));
+    CuAssertIntEquals(tc, 0, GetHexFromScreenY(0, - TILE_HEIGHT / 2));
+    CuAssertIntEquals(tc, 0, GetHexFromScreenY(0, TILE_HEIGHT / 2 - 1));
+    CuAssertIntEquals(tc, 1, GetHexFromScreenY(0, TILE_HEIGHT / 2));
+    CuAssertIntEquals(tc, -1, GetHexFromScreenY(0, - TILE_HEIGHT / 2 - 1));
+}
+
 void add_suite_mapdata(CuSuite* suite)
 {
     SUITE_ADD_TEST(suite, test_map_insert);
@@ -156,6 +189,8 @@ void add_suite_mapdata(CuSuite* suite)
     SUITE_ADD_TEST(suite, test_map_col_index);
     SUITE_ADD_TEST(suite, test_map_get_row);
     SUITE_ADD_TEST(suite, test_map_get);
+    SUITE_ADD_TEST(suite, test_get_screen_from_hex);
+    SUITE_ADD_TEST(suite, test_get_hex_from_screen);
     SUITE_ADD_TEST(suite, test_crparse);
 }
 

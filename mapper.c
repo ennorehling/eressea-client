@@ -9,6 +9,7 @@
 
 #include "crfile.h"
 #include "mapdata.h"
+#include "viewport.h"
 
 #include <cJSON/cJSON.h>
 
@@ -24,40 +25,55 @@ typedef struct Rect {
     int x, y, width, height;
 } Rect;
 
+typedef struct Terrain {
+    Texture2D texture;
+    char* name;
+} Terrain;
+
 // Load an image from "fname" and return an SDL_Texture with the content of the image
 Texture2D load_texture(const char* fname);
 
-static Texture2D *textures;
+static Terrain *terrains;
 
 void load_textures(void) {
-    char **files, **p;
-    files = stb_readdir_files_mask("res/img", "*.png");
+    char **p;
+    char ** files = stb_readdir_files_mask("res/img", "*.png");
+    size_t len = stb_arr_len(files);
     stb_arr_for(p, files) {
         char *filename = *p;
-        Texture2D tex = load_texture(filename);
-        if (tex.format) {
-            stb_arr_push(textures, tex);
+        char* lp = filename + 8;
+        char* rp = strchr(lp, '.');
+        if (rp > lp) {
+            Texture2D tex = load_texture(filename);
+            if (tex.format) {
+                Terrain t;
+                /* TODO: use strdup or antirez/sds */
+                t.name = malloc(1 + rp - lp);
+                if (t.name) {
+                    memcpy(t.name, lp, rp - lp);
+                    t.name[rp - lp] = 0;
+                }
+                t.texture = tex;
+                stb_arr_push(terrains, t);
+            }
         }
     }
     stb_readdir_free(files);
 }
 
 void destroy_textures(void) {
-    int i;
-    for (i = 0; i != stb_arr_len(textures); ++i) {
-        UnloadTexture(textures[i]);
+    unsigned int i;
+    for (i = 0; i != stb_arr_len(terrains); ++i) {
+        UnloadTexture(terrains[i].texture);
+        free(terrains[i].name);
     }
-    stb_arr_free(textures);
+    stb_arr_free(terrains);
+    terrains = NULL;
 }
 
-static int report_x(int x, int y) {
-    return x + (y + 1) / 2;
-}
-
-static int map_terrain(int x, int y) {
-    int tx = report_x(x, y);
-    int ty = -y;
-    return tx % stb_arr_len(textures);
+static int terrain_index(const char* name)
+{
+    return 0;
 }
 
 static map_data map;
@@ -90,7 +106,8 @@ int load_map(const char* filename) {
                     attr = cJSON_GetObjectItem(jRegion, "Name");
                     ins->name = attr ? attr->valuestring : NULL;
                     attr = cJSON_GetObjectItem(jRegion, "Terrain");
-                    ins->terrain_index = 0;
+                    // ins->terrain_index = terrain_index(attr->valuestring);
+                    ins->terrain_index = 1 + y % stb_arr_len(terrains);
                 }
             }
         }
@@ -98,28 +115,29 @@ int load_map(const char* filename) {
     return 0;
 }
 
-int main(int argc, char** argv) {
-
-    if (argc > 0) {
-        load_map(argv[1]);
-        const char* filename = argv[1];
-        load_map(filename);
-    }
+int main(int argc, char** argv)
+{
     // Create and initialize a 800x600 window
     InitWindow(800, 600, "raylib mapper");
     load_textures();
+    if (argc > 0) {
+        const char* filename = argv[1];
+        load_map(filename);
+    }
     Rect viewport = { 0, 0, 0, 0 };
-    int dw, dh;
     viewport.width = GetScreenWidth();
     viewport.height = GetScreenHeight();
-    dw = 2 + viewport.width / 64;
-    dh = 2 + viewport.height / 48;
+    int map_width = 2 + viewport.width / TILE_WIDTH;
+    int map_height = 2 + viewport.height / TILE_HEIGHT;
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
-        int speed = 1;
+        int speed = 10;
         Point delta = { 0, 0 };
-        if (IsKeyDown(KEY_LEFT_SHIFT)) {
-            speed = 10;
+        if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {
+            speed = 50;
+        }
+        else if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) {
+            speed = 1;
         }
         if (IsKeyDown(KEY_LEFT)) {
             delta.x = -1;
@@ -136,27 +154,58 @@ int main(int argc, char** argv) {
         viewport.x += delta.x * speed;
         viewport.y += delta.y * speed;
 
-        int dx, dy;
-        dx = viewport.x / 64 - ((viewport.x < 0) ? 1 : 0);
-        dy = viewport.y / 48 - ((viewport.y < 0) ? 1 : 0);
+        /* screen origin is at bottom left */
+        int origin_x = viewport.x; // -viewport.width / 2;
+        int origin_y = viewport.y; //  +viewport.height / 2;
+        int map_left = GetHexFromScreenX(origin_x, origin_y);
+        int map_bottom = GetHexFromScreenY(origin_x, origin_y);
 
         BeginDrawing();
         ClearBackground(WHITE);
-        int x, y;
-        for (y = 0; y <= dh; ++y) {
+        /*
+        int map_y = 0;
+        int map_x = 0;
+        Vector2 dest;
+        dest.y = (float)GetScreenFromHexY(map_x, map_y) - viewport.y - IMAGE_HEIGHT / 2 + viewport.height / 2;
+        dest.x = (float)GetScreenFromHexX(map_x, map_y) - viewport.x - IMAGE_WIDTH / 2 + viewport.width / 2;
+        DrawTextureV(terrains[0].texture, dest, WHITE);
+        */
+        /*
+        for (int map_y = map_bottom; map_y <= map_bottom + map_height; ++map_y) {
+            int map_x = map_left - (1 + map_y - map_bottom) / 2;
             Vector2 dest;
-            int ty = dy + y;
-            dest.y = (float)(ty * 48 - viewport.y - 40);
-            for (x = 0; x <= dw; ++x) {
-                int tx = dx + x;
-                dest.x = (float)(tx * 64 - viewport.x - 40 + (ty & 1) * 32);
-                // Copy the texture on the renderer
-                if (tx || ty) {
-                    int terrain = map_terrain(tx, ty);
-                    DrawTextureV(textures[terrain], dest, WHITE);
+            dest.y = (float)GetScreenFromHexY(map_x, map_y) - viewport.y - IMAGE_HEIGHT / 2;
+            dest.x = (float)GetScreenFromHexX(map_x, map_y) - viewport.x - IMAGE_WIDTH / 2;
+            DrawTextureV(terrains[0].texture, dest, WHITE);
+        }
+        */
+        size_t nrows = arrlen(map.rows);
+        for (unsigned int r = map_row_index(map.rows, map_bottom); r < nrows; ++r) {
+            map_info* row = map.rows[r];
+            if (row->y > map_left + map_height) {
+                // this row is the first one above the screen
+                break;
+            }
+            int map_x = map_left + (1 + row->y - map_bottom) / 2;
+
+            Vector2 dest;
+            dest.y = (float)GetScreenFromHexY(map_x, row->y) - viewport.y + viewport.height / 2 - (IMAGE_HEIGHT - TILE_HEIGHT) / 2;
+
+            size_t ncols = arrlen(row);
+            for (unsigned int c = map_col_index(row, map_x); c < ncols; ++c) {
+                map_info* tile = row + c;
+                if (tile->x > map_x + map_width) {
+                    // first tile to the right of the screen
+                    break;
+                }
+                int terrain = tile->terrain_index;
+                if (terrain > 0) {
+                    dest.x = (float)GetScreenFromHexX(tile->x, tile->y) - viewport.x + viewport.width / 2 - (IMAGE_WIDTH - TILE_WIDTH) / 2;
+                    DrawTextureV(terrains[terrain - 1].texture, dest, WHITE);
                 }
             }
         }
+
         EndDrawing();
     }
 

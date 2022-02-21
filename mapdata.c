@@ -23,33 +23,32 @@ void *lbound(const void *key, const void *base, size_t nmemb, size_t size, int (
 
 unsigned int map_row_index(struct map_info** rows, int y)
 {
-    unsigned int i, len = arrlen(rows);
+    size_t i, len = arrlen(rows);
     // TODO: binary search
     for (i = 0; i != len; ++i) {
         if (rows[i]->y >= y) {
-            return i;
+            return (unsigned int)i;
         }
     }
-    return len;
+    return (unsigned int)len;
 }
 
 unsigned int map_col_index(struct map_info* row, int x)
 {
-    unsigned int i, len = arrlen(row);
+    size_t i, len = arrlen(row);
     // TODO: binary search
     for (i = 0; i != len; ++i) {
         if (row[i].x >= x) {
-            return i;
+            return (unsigned int)i;
         }
     }
-    return len;
+    return (unsigned int)len;
 }
 
 map_info* map_get_row(map_info** rows, int y)
 {
-    size_t r, nrows = arrlen(rows);
-
-    r = map_row_index(rows, y);
+    size_t nrows = arrlen(rows);
+    unsigned int r = map_row_index(rows, y);
     if (r < nrows && rows[r]->y == y) {
         return rows[r];
     }
