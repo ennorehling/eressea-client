@@ -22,6 +22,7 @@ int div_floor(int x, int y) {
 int GetHexFromScreenY(int screen_x, int screen_y)
 {
     (void)screen_x;
+    screen_y += TILE_HEIGHT / 2;
     return - div_floor(screen_y, TILE_HEIGHT);
 }
 
