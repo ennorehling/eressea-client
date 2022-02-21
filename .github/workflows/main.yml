@@ -27,7 +27,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Install dependencies
-        run: sudo apt install libcjson-dev
+        run: sudo apt install libcjson-dev libasound2-dev mesa-common-dev libx11-dev libxrandr-dev libxi-dev xorg-dev libgl1-mesa-dev libglu1-mesa-dev
       - name: Run .travis.yml build script
         uses: ktomk/run-travis-yml@v1
         with:
