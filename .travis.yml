@@ -7,7 +7,7 @@ script:
   - git submodule update --init
   - cmake -B build -S .
   - cd build
-  - make test
+  - make && make test
 addons:
   apt:
     packages:
