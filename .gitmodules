@@ -6,4 +6,4 @@
 	url = https://github.com/nothings/stb.git
 [submodule "sds"]
 	path = sds
-	url = git@github.com:ennorehling/sds.git
+	url = https://github.com/ennorehling/sds.git
