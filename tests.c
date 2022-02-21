@@ -8,7 +8,7 @@
 #include "stb/stb_ds.h"
 #include "CuTest.h"
 
-#include "cJSON/cJSON.h"
+#include <cjson/cJSON.h>
 #include <stdio.h>
 #include <string.h>
 

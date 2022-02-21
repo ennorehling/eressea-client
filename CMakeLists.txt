@@ -4,6 +4,7 @@ project (mapper C)
 
 enable_testing()
 set(CMAKE_C_STANDARD 11)
+set(OpenGL_GL_PREFERENCE "GLVND") 
 
 if (WIN32)
 file(TO_CMAKE_PATH "${CMAKE_TOOLCHAIN_FILE}" CMAKE_TOOLCHAIN_FILE )
@@ -11,9 +12,10 @@ file(TO_CMAKE_PATH "${CMAKE_MODULE_PATH}" CMAKE_MODULE_PATH )
 file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH )
 endif(WIN32)
 
-add_subdirectory(cJSON)
+find_package(cJSON)
 add_subdirectory(raylib)
-
+set(RAYLIB_LIBRARIES raylib)
+set(RAYLIB_INCLUDE_DIRS raylib/src)
 add_subdirectory(crpat)
 
 add_executable(mapper mapper.c libs.c crjson.c crfile.c log.c mapdata.c viewport.c sds/sds.c)

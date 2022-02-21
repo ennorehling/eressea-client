@@ -2,8 +2,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include <raylib/raylib.h>
-
 #include "stb/tests/prerelease/stb_lib.h"
 #include "stb/stb_ds.h"
 
@@ -12,7 +10,8 @@
 #include "viewport.h"
 #include "sds/sds.h"
 
-#include <cJSON.h>
+#include <raylib.h>
+#include <cjson/cJSON.h>
 
 #include <stdbool.h>
 #include <stdio.h>

@@ -9,7 +9,7 @@
 #include "crjson.h"
 #include "crfile.h"
 
-#include "cJSON/cJSON.h"
+#include "cjson/cJSON.h"
 
 #include <assert.h>
 #include <stdlib.h>
