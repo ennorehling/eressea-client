@@ -107,7 +107,7 @@ int load_map(const char* filename) {
                     ins->name = attr ? attr->valuestring : NULL;
                     attr = cJSON_GetObjectItem(jRegion, "Terrain");
                     // ins->terrain_index = terrain_index(attr->valuestring);
-                    ins->terrain_index = 1 + y % stb_arr_len(terrains);
+                    ins->terrain_index = 1 + abs(y) % stb_arr_len(terrains);
                 }
             }
         }
@@ -155,41 +155,31 @@ int main(int argc, char** argv)
         viewport.y += delta.y * speed;
 
         /* screen origin is at bottom left */
-        int origin_x = viewport.x; // -viewport.width / 2;
-        int origin_y = viewport.y; //  +viewport.height / 2;
+        int origin_x = viewport.x - viewport.width / 2;
+        int origin_y = viewport.y + viewport.height / 2;
         int map_left = GetHexFromScreenX(origin_x, origin_y);
         int map_bottom = GetHexFromScreenY(origin_x, origin_y);
 
         BeginDrawing();
         ClearBackground(WHITE);
-        /*
-        int map_y = 0;
-        int map_x = 0;
+/*
         Vector2 dest;
-        dest.y = (float)GetScreenFromHexY(map_x, map_y) - viewport.y - IMAGE_HEIGHT / 2 + viewport.height / 2;
-        dest.x = (float)GetScreenFromHexX(map_x, map_y) - viewport.x - IMAGE_WIDTH / 2 + viewport.width / 2;
+        dest.y = (float)GetScreenFromHexY(0, 0) - viewport.y - IMAGE_HEIGHT / 2 + viewport.height / 2;
+        dest.x = (float)GetScreenFromHexX(0, 0) - viewport.x - IMAGE_WIDTH / 2 + viewport.width / 2;
         DrawTextureV(terrains[0].texture, dest, WHITE);
-        */
-        /*
-        for (int map_y = map_bottom; map_y <= map_bottom + map_height; ++map_y) {
-            int map_x = map_left - (1 + map_y - map_bottom) / 2;
-            Vector2 dest;
-            dest.y = (float)GetScreenFromHexY(map_x, map_y) - viewport.y - IMAGE_HEIGHT / 2;
-            dest.x = (float)GetScreenFromHexX(map_x, map_y) - viewport.x - IMAGE_WIDTH / 2;
-            DrawTextureV(terrains[0].texture, dest, WHITE);
-        }
-        */
+*/
+#if 1
         size_t nrows = arrlen(map.rows);
         for (unsigned int r = map_row_index(map.rows, map_bottom); r < nrows; ++r) {
             map_info* row = map.rows[r];
-            if (row->y > map_left + map_height) {
+            if (row->y > map_bottom + map_height) {
                 // this row is the first one above the screen
                 break;
             }
-            int map_x = map_left + (1 + row->y - map_bottom) / 2;
+            int map_x = map_left - (1 + row->y - map_bottom) / 2;
 
             Vector2 dest;
-            dest.y = (float)GetScreenFromHexY(map_x, row->y) - viewport.y + viewport.height / 2 - (IMAGE_HEIGHT - TILE_HEIGHT) / 2;
+            dest.y = (float)GetScreenFromHexY(map_x, row->y) - viewport.y - IMAGE_HEIGHT / 2 + viewport.height / 2;
 
             size_t ncols = arrlen(row);
             for (unsigned int c = map_col_index(row, map_x); c < ncols; ++c) {
@@ -200,12 +190,12 @@ int main(int argc, char** argv)
                 }
                 int terrain = tile->terrain_index;
                 if (terrain > 0) {
-                    dest.x = (float)GetScreenFromHexX(tile->x, tile->y) - viewport.x + viewport.width / 2 - (IMAGE_WIDTH - TILE_WIDTH) / 2;
+                    dest.x = (float)GetScreenFromHexX(tile->x, tile->y) - viewport.x - IMAGE_WIDTH / 2 + viewport.width / 2;;
                     DrawTextureV(terrains[terrain - 1].texture, dest, WHITE);
                 }
             }
         }
-
+#endif
         EndDrawing();
     }
 
