@@ -7,3 +7,6 @@
 [submodule "sds"]
 	path = sds
 	url = https://github.com/ennorehling/sds.git
+[submodule "cutest"]
+	path = cutest
+	url = https://github.com/ennorehling/cutest.git

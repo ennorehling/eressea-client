@@ -22,6 +22,8 @@ if (NOT CJSON_FOUND)
   set(CJSON_LIBRARIES "${CJSON_LIBRARY}")
 endif()
 
+add_subdirectory(cutest)
+
 find_package(raylib 3.0 QUIET)
 
 if(raylib_FOUND)
@@ -53,14 +55,14 @@ target_link_libraries(mapper PRIVATE
 
 target_include_directories(mapper PRIVATE
     ${CRPAT_INCLUDE_DIR}
+    ${CJSON_INCLUDE_DIR}
     ${RAYLIB_INCLUDE_DIRS}
-    ${CJSON_INCLUDE_DIRS}
 )
 
-add_executable(tests tests.c libs.c CuTest.c mapdata.c crfile.c log.c viewport.c sds/sds.c)
+add_executable(tests tests.c libs.c mapdata.c crfile.c log.c viewport.c cutest/CuTest.c sds/sds.c)
 target_include_directories(tests PRIVATE
+    ${CJSON_INCLUDE_DIR}
     ${CRPAT_INCLUDE_DIR}
-    ${CJSON_INCLUDE_DIRS}
 )
 
 target_link_libraries(tests PRIVATE
