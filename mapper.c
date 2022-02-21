@@ -179,7 +179,7 @@ int main(int argc, char** argv)
         if (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT)) {
             speed = 50;
         }
-        else if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) {
+        else if (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)) {
             speed = 1;
         }
         if (IsKeyDown(KEY_LEFT)) {
