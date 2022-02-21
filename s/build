@@ -1,5 +1,5 @@
 #!/bin/sh
-cmake -S . -B build -DOpenGL_GL_PREFERENCE=GLVND -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B build -DOpenGL_GL_PREFERENCE=GLVND -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=ON
 cd build
 make
 make test

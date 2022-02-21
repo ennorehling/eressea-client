@@ -12,5 +12,16 @@ addons:
   apt:
     packages:
       - libcjson-dev
+      - libx11-dev
+      - libxrandr-dev
+      - libxinerama-dev
+      - libxcursor-dev
+      - libxi-dev
+      - libopengl-dev
+      - libasound2-dev
+      - mesa-common-dev
+      - xorg-dev
+      - libgl1-mesa-dev
+      - libglu1-mesa-dev
 os:
   - linux

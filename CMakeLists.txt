@@ -11,7 +11,17 @@ file(TO_CMAKE_PATH "${CMAKE_MODULE_PATH}" CMAKE_MODULE_PATH )
 file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH )
 endif(WIN32)
 
-find_package(cJSON 1.7 REQUIRED)
+find_package(cJSON 1.7 QUIET)
+
+if (NOT CJSON_FOUND)
+  find_path(CJSON_INCLUDE_DIR cJSON.h PATH_SUFFIXES cjson)
+  mark_as_advanced(CJSON_INCLUDE_DIR)
+  find_library(CJSON_LIBRARY cjson)
+  mark_as_advanced(CJSON_LIBRARY)
+  set(CJSON_INCLUDE_DIRS "${CJSON_INCLUDE_DIR}")
+  set(CJSON_LIBRARIES "${CJSON_LIBRARY}")
+endif()
+
 find_package(raylib 3.0 QUIET)
 
 if(raylib_FOUND)
