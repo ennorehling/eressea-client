@@ -40,7 +40,7 @@ static Terrain *terrains;
 void load_textures(void) {
     char **p;
     char ** files = stb_readdir_files_mask("res/img", "*.png");
-    size_t len = stb_arr_len(files);
+    size_t len = arrlen(files);
     stb_arr_for(p, files) {
         char *filename = *p;
         char* lp = filename + 8;
@@ -49,10 +49,10 @@ void load_textures(void) {
             Texture2D tex = load_texture(filename);
             if (tex.format) {
                 Terrain t;
-                t.filename = sdsnewlen(lp, rp - lp);
+                t.filename = sdsnew(lp);
                 t.texture = tex;
                 t.names = NULL;
-                stb_arr_push(terrains, t);
+                arrpush(terrains, t);
             }
         }
     }
@@ -68,12 +68,12 @@ void load_terrains(const char * filename) {
             if (NULL == fgets(buffer, sizeof buffer, F)) {
                 break;
             }
-            token = strtok(buffer, ",;");
+            token = strtok(buffer, ",;\n");
             if (token) {
                 size_t len = arrlen(terrains);
                 for (unsigned int i = 0; i != len; ++i) {
                     if (strcmp(terrains[i].filename, token) == 0) {
-                        while ((token = strtok(NULL, ",;")) != NULL) {
+                        while ((token = strtok(NULL, ",;\n")) != NULL && token[0]) {
                             char* name = sdsnew(token);
                             arrpush(terrains[i].names, name);
                         }
@@ -87,30 +87,35 @@ void load_terrains(const char * filename) {
 }
 
 void destroy_textures(void) {
-    for (unsigned int i = 0; i != stb_arr_len(terrains); ++i)
+    for (unsigned int i = 0; i != arrlen(terrains); ++i)
     {
         UnloadTexture(terrains[i].texture);
         sdsfree(terrains[i].filename);
-        for (unsigned int j = 0; j != stb_arr_len(terrains[i].names); ++j)
+        for (unsigned int j = 0; j != arrlen(terrains[i].names); ++j)
         {
             sdsfree(terrains[i].names[j]);
         }
         arrfree(terrains[i].names);
     }
-    stb_arr_free(terrains);
+    arrfree(terrains);
     terrains = NULL;
 }
 
 static int terrain_index(const char* name)
 {
-    unsigned int num_terrains = stb_arr_len(terrains);
+    size_t num_terrains = arrlen(terrains);
     if (num_terrains == 0) {
         return 0;
     }
-    if (strcmp(name, "Ozean") == 0) {
-        return num_terrains;
+    for (unsigned int t = 0; t != num_terrains; ++t) {
+        sds* names = terrains[t].names;
+        for (unsigned int n = 0; n != arrlen(names); ++n) {
+            if (strcmp(name, names[n]) == 0) {
+                return 1 + t;
+            }
+        }
     }
-    return 1 + name[0] % (num_terrains - 1);
+    return 0;
 }
 
 static map_data map;
@@ -144,7 +149,7 @@ int load_map(const char* filename) {
                     ins->name = attr ? attr->valuestring : NULL;
                     attr = cJSON_GetObjectItem(jRegion, "Terrain");
                     ins->terrain_index = terrain_index(attr->valuestring);
-                    // ins->terrain_index = 1 + abs(y) % stb_arr_len(terrains);
+                    // ins->terrain_index = 1 + abs(y) % arrlen(terrains);
                 }
             }
         }
