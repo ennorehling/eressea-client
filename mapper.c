@@ -232,6 +232,7 @@ int main(int argc, char** argv)
                 }
             }
         }
+        DrawFPS(8, 8);
         EndDrawing();
     }
 
