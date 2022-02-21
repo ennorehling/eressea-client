@@ -162,13 +162,7 @@ int main(int argc, char** argv)
 
         BeginDrawing();
         ClearBackground(WHITE);
-/*
-        Vector2 dest;
-        dest.y = (float)GetScreenFromHexY(0, 0) - viewport.y - IMAGE_HEIGHT / 2 + viewport.height / 2;
-        dest.x = (float)GetScreenFromHexX(0, 0) - viewport.x - IMAGE_WIDTH / 2 + viewport.width / 2;
-        DrawTextureV(terrains[0].texture, dest, WHITE);
-*/
-#if 1
+
         size_t nrows = arrlen(map.rows);
         for (unsigned int r = map_row_index(map.rows, map_bottom); r < nrows; ++r) {
             map_info* row = map.rows[r];
@@ -195,7 +189,6 @@ int main(int argc, char** argv)
                 }
             }
         }
-#endif
         EndDrawing();
     }
 
