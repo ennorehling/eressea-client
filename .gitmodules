@@ -7,3 +7,6 @@
 [submodule "sds"]
 	path = sds
 	url = git@github.com:ennorehling/sds.git
+[submodule "raylib"]
+	path = raylib
+	url = https://github.com/raysan5/raylib.git
