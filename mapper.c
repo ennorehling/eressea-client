@@ -12,7 +12,7 @@
 #include "viewport.h"
 #include "sds/sds.h"
 
-#include <cJSON/cJSON.h>
+#include <cjson/cJSON.h>
 
 #include <stdbool.h>
 #include <stdio.h>

@@ -11,13 +11,26 @@ file(TO_CMAKE_PATH "${CMAKE_MODULE_PATH}" CMAKE_MODULE_PATH )
 file(TO_CMAKE_PATH "${CMAKE_PREFIX_PATH}" CMAKE_PREFIX_PATH )
 endif(WIN32)
 
-find_package(CJSON 1.7 REQUIRED)
-find_package(raylib 3.0 REQUIRED)
+find_package(cJSON 1.7 REQUIRED)
+find_package(raylib 3.0 QUIET)
 
 if(raylib_FOUND)
+  set(RAYLIB_FOUND 1)
   set(RAYLIB_LIBRARIES "${raylib_LIBRARIES}")
   set(RAYLIB_INCLUDE_DIRS "${raylib_INCLUDE_DIRS}")
 endif(raylib_FOUND)
+
+if(NOT RAYLIB_FOUND)
+  include(FetchContent)
+  FetchContent_Declare(
+    raylib
+    URL https://github.com/raysan5/raylib/archive/refs/tags/4.0.0.tar.gz
+  )
+  FetchContent_MakeAvailable(raylib)
+  set(RAYLIB_LIBRARIES raylib)
+  set(RAYLIB_INCLUDE_DIRS "${raylib_SOURCE_DIR}/src")
+  set(OpenGL_GL_PREFERENCE "GLVND")
+endif()
 
 add_subdirectory(crpat)
 

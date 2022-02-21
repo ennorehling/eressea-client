@@ -1,0 +1,6 @@
+#!/bin/sh
+cmake -S . -B build -DOpenGL_GL_PREFERENCE=GLVND -DCMAKE_BUILD_TYPE=Debug
+cd build
+make
+make test
+
