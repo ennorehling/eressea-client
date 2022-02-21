@@ -30,7 +30,7 @@ int GetHexFromScreenX(int screen_x, int screen_y)
 {
     screen_x += TILE_WIDTH / 2;
     screen_y += TILE_HEIGHT / 2;
-    return div_floor(screen_x, TILE_WIDTH) - div_floor(screen_y, TILE_HEIGHT);
+    return div_floor(screen_x, TILE_WIDTH) + div_floor(screen_y, TILE_HEIGHT);
 }
 
 int GetScreenFromHexY(int hex_x, int hex_y) {

@@ -173,7 +173,7 @@ static void test_get_hex_from_screen(CuTest* tc) {
     CuAssertIntEquals(tc, 0, GetHexFromScreenX(- TILE_WIDTH / 2, 0));
     CuAssertIntEquals(tc, -1, GetHexFromScreenX(- TILE_WIDTH / 2 - 1, 0));
 
-    CuAssertIntEquals(tc, -1, GetHexFromScreenX(0, TILE_HEIGHT));
+    CuAssertIntEquals(tc, 1, GetHexFromScreenX(0, TILE_HEIGHT));
 
     CuAssertIntEquals(tc, 0, GetHexFromScreenY(0, 0));
     CuAssertIntEquals(tc, -1, GetHexFromScreenY(0, TILE_HEIGHT / 2));
@@ -181,6 +181,9 @@ static void test_get_hex_from_screen(CuTest* tc) {
 
     CuAssertIntEquals(tc, 0, GetHexFromScreenY(0, - TILE_HEIGHT / 2));
     CuAssertIntEquals(tc, 1, GetHexFromScreenY(0, - TILE_HEIGHT / 2 - 1));
+    
+    CuAssertIntEquals(tc, -6, GetHexFromScreenY(-400, 300));
+    CuAssertIntEquals(tc, -3, GetHexFromScreenX(-400, 300));
 }
 
 void add_suite_mapdata(CuSuite* suite)
