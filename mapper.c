@@ -10,6 +10,7 @@
 #include "crfile.h"
 #include "mapdata.h"
 #include "viewport.h"
+#include "sds/sds.h"
 
 #include <cJSON/cJSON.h>
 
@@ -27,7 +28,8 @@ typedef struct Rect {
 
 typedef struct Terrain {
     Texture2D texture;
-    char* name;
+    sds filename;
+    sds* names;
 } Terrain;
 
 // Load an image from "fname" and return an SDL_Texture with the content of the image
@@ -47,13 +49,9 @@ void load_textures(void) {
             Texture2D tex = load_texture(filename);
             if (tex.format) {
                 Terrain t;
-                /* TODO: use strdup or antirez/sds */
-                t.name = malloc(1 + rp - lp);
-                if (t.name) {
-                    memcpy(t.name, lp, rp - lp);
-                    t.name[rp - lp] = 0;
-                }
+                t.filename = sdsnewlen(lp, rp - lp);
                 t.texture = tex;
+                t.names = NULL;
                 stb_arr_push(terrains, t);
             }
         }
@@ -61,11 +59,43 @@ void load_textures(void) {
     stb_readdir_free(files);
 }
 
+void load_terrains(const char * filename) {
+    FILE* F = fopen(filename, "rt");
+    if (F) {
+        while (!feof(F)) {
+            char buffer[128];
+            char* token;
+            if (NULL == fgets(buffer, sizeof buffer, F)) {
+                break;
+            }
+            token = strtok(buffer, ",;");
+            if (token) {
+                size_t len = arrlen(terrains);
+                for (unsigned int i = 0; i != len; ++i) {
+                    if (strcmp(terrains[i].filename, token) == 0) {
+                        while ((token = strtok(NULL, ",;")) != NULL) {
+                            char* name = sdsnew(token);
+                            arrpush(terrains[i].names, name);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        fclose(F);
+    }
+}
+
 void destroy_textures(void) {
-    unsigned int i;
-    for (i = 0; i != stb_arr_len(terrains); ++i) {
+    for (unsigned int i = 0; i != stb_arr_len(terrains); ++i)
+    {
         UnloadTexture(terrains[i].texture);
-        free(terrains[i].name);
+        sdsfree(terrains[i].filename);
+        for (unsigned int j = 0; j != stb_arr_len(terrains[i].names); ++j)
+        {
+            sdsfree(terrains[i].names[j]);
+        }
+        arrfree(terrains[i].names);
     }
     stb_arr_free(terrains);
     terrains = NULL;
@@ -73,7 +103,14 @@ void destroy_textures(void) {
 
 static int terrain_index(const char* name)
 {
-    return 0;
+    unsigned int num_terrains = stb_arr_len(terrains);
+    if (num_terrains == 0) {
+        return 0;
+    }
+    if (strcmp(name, "Ozean") == 0) {
+        return num_terrains;
+    }
+    return 1 + name[0] % (num_terrains - 1);
 }
 
 static map_data map;
@@ -106,8 +143,8 @@ int load_map(const char* filename) {
                     attr = cJSON_GetObjectItem(jRegion, "Name");
                     ins->name = attr ? attr->valuestring : NULL;
                     attr = cJSON_GetObjectItem(jRegion, "Terrain");
-                    // ins->terrain_index = terrain_index(attr->valuestring);
-                    ins->terrain_index = 1 + abs(y) % stb_arr_len(terrains);
+                    ins->terrain_index = terrain_index(attr->valuestring);
+                    // ins->terrain_index = 1 + abs(y) % stb_arr_len(terrains);
                 }
             }
         }
@@ -120,6 +157,7 @@ int main(int argc, char** argv)
     // Create and initialize a 800x600 window
     InitWindow(800, 600, "raylib mapper");
     load_textures();
+    load_terrains("res/terrains.txt");
     if (argc > 0) {
         const char* filename = argv[1];
         load_map(filename);
