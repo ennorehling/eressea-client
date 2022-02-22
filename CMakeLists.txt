@@ -41,9 +41,10 @@ if(NOT RAYLIB_FOUND)
   FetchContent_MakeAvailable(raylib)
   set(RAYLIB_LIBRARIES raylib)
   set(RAYLIB_INCLUDE_DIRS "${raylib_SOURCE_DIR}/src")
-  set(OpenGL_GL_PREFERENCE "GLVND")
+  if(UNIX)
+    set(OpenGL_GL_PREFERENCE "GLVND")
+  endif(UNIX)
 endif()
-
 add_subdirectory(crpat)
 
 add_executable(mapper mapper.c libs.c crjson.c crfile.c log.c mapdata.c viewport.c sds/sds.c)
