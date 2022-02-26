@@ -218,6 +218,7 @@ int main(int argc, char** argv)
             Vector2 dest;
             dest.y = (float)GetScreenFromHexY(map_x, row->y) - viewport.y - IMAGE_HEIGHT / 2 + viewport.height / 2;
 
+            Font font = GetFontDefault();
             size_t ncols = arrlen(row);
             for (unsigned int c = map_col_index(row, map_x); c < ncols; ++c) {
                 map_info* tile = row + c;
@@ -229,6 +230,15 @@ int main(int argc, char** argv)
                 if (terrain > 0) {
                     dest.x = (float)GetScreenFromHexX(tile->x, tile->y) - viewport.x - IMAGE_WIDTH / 2 + viewport.width / 2;;
                     DrawTextureV(terrains[terrain - 1].texture, dest, WHITE);
+                    if (tile->name) {
+                        int spacing = 1;
+                        int fontSize = 10;
+                        Vector2 textSize = MeasureTextEx(font, tile->name, fontSize, spacing);
+                        Vector2 pos = dest;
+                        pos.x += (IMAGE_WIDTH - textSize.x) / 2;
+                        pos.y += (IMAGE_HEIGHT - textSize.y) / 2;
+                        DrawTextEx(font, tile->name, pos, fontSize, spacing, BLACK);
+                    }
                 }
             }
         }
